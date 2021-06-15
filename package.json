@@ -1,0 +1,41 @@
+{
+  "name": "wcd2",
+  "version": "1.0.0",
+  "description": "Water Conservation Dashboard",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mToebler/WCD2.git"
+  },
+  "author": "Mark Tobler",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mToebler/WCD2/issues"
+  },
+  "homepage": "https://github.com/mToebler/WCD2#readme",
+  "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "core-js": "^3.14.0",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "make-runnable": "^1.3.10",
+    "moment": "^2.29.1",
+    "npm-run-all": "^4.1.5",
+    "pg": "^8.6.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-register": "^6.26.0",
+    "babel-watch": "^7.4.1"
+  }
+}

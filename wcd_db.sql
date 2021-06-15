@@ -42,11 +42,12 @@ description VARCHAR(1023)
 
 CREATE SEQUENCE user_id_seq;
 CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY NOT NULL DEFAULT nextval('user_id_seq'),
-    first_name VARCHAR(255) NOT NULL,
-    last_name VARCHAR(255) NOT NULL,
-    email VARCHAR(255),
-    password TEXT NOT NULL --this is meant to be salted, hashed when inserted
+   id INTEGER PRIMARY KEY NOT NULL DEFAULT nextval('user_id_seq'),
+   first_name VARCHAR(255) NOT NULL,
+   last_name VARCHAR(255) NOT NULL,
+   email VARCHAR(255),
+   pw TEXT NOT NULL, --this is meant to be salted, hashed when inserted
+   is_admin BOOLEAN
 );
 
 -- Tie up loose ends, add the missing FKs

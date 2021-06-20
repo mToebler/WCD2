@@ -72,7 +72,7 @@ const createUser = async (req, res) => {
 };
 
 /**
-   * Signin
+   * Login / Signin
    * @param {object} req
    * @param {object} res
    * @returns {object} user object

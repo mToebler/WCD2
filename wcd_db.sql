@@ -20,8 +20,8 @@ area  INTEGER
 CREATE SEQUENCE usage_id_seq;
 CREATE TABLE IF NOT EXISTS usage (
 id INTEGER PRIMARY KEY NOT NULL DEFAULT nextval('usage_id_seq'),
-time TIMESTAMP NOT NULL,
-usage NUMERIC(12,10) CHECK (usage > 0),
+usage_time TIMESTAMP NOT NULL,
+usage_amount NUMERIC(12,10) CHECK (usage_amount >= 0),
 unit_id INTEGER  -- [FK to units.id]
 );
 
@@ -84,3 +84,23 @@ DROP SEQUENCE IF EXISTS sprinkler_id_seq;
 DROP SEQUENCE IF EXISTS unit_id_seq;
 DROP SEQUENCE IF EXISTS user_id_seq;
 **/
+
+------ DATA -----------
+INSERT INTO unit (name, description) VALUES ('gallons', 'an imperial unit of liquid capacity equal to 3.79 liters');
+
+INSERT INTO ZONE (id, label) VALUES (1, 'Back Planter');
+INSERT INTO ZONE (id, label) VALUES (2, 'Back Grass');
+INSERT INTO ZONE (id, label) VALUES (3, 'Privets and Hopseeds');
+INSERT INTO ZONE (id, label) VALUES (4, 'Carport Asparagus Ferns');
+INSERT INTO ZONE (id, label) VALUES (5, 'Crepe Myrtles');
+INSERT INTO ZONE (id, label) VALUES (6, 'Back East Wall, Shrubs, Mesquite Trees');
+INSERT INTO ZONE (id, label) VALUES (7, 'Front East Desert');
+INSERT INTO ZONE (id, label) VALUES (8, 'Front East Planter');
+INSERT INTO ZONE (id, label) VALUES (9, 'Front Grass');
+INSERT INTO ZONE (id, label) VALUES (10, 'Front Trees and Grass');
+INSERT INTO ZONE (id, label) VALUES (11, 'Front West Grass');
+INSERT INTO ZONE (id, label) VALUES (12, 'Front Planter');
+INSERT INTO ZONE (id, label) VALUES (13, 'Front West Desert');
+INSERT INTO ZONE (id, label) VALUES (14, 'Front Desert');
+INSERT INTO ZONE (id, label) VALUES (15, 'Front West Planter');
+INSERT INTO ZONE (id, label) VALUES (16, 'Pomegranates');

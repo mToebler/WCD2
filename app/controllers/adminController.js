@@ -15,7 +15,7 @@ import {
 } from '../helpers/status';
 
 /**
-  * Creates an Admin 
+  * Creates an admin 
   * NOTE: async
   * @param {object} req
   * @param {object} res
@@ -80,7 +80,7 @@ const createAdmin = async (req, res) => {
 };
 
 /**
- * Update A User to Admin
+ * Update user to an admin
  * @param {object} req 
  * @param {object} res 
  * @returns {object} updated user
@@ -91,7 +91,7 @@ const updateUserToAdmin = async (req, res) => {
 
    const { is_admin } = req.user;
    if(!is_admin === true) {
-      errorMessage.error = 'Sorry You are unauthorized to make a user an admin';
+      errorMessage.error = 'Sorry, you are unauthorized to make user an admin';
       return res.status(status.bad).send(errorMessage);
    }
    if(isAdmin === '') {

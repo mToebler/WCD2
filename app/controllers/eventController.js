@@ -54,6 +54,42 @@ const addEventDetails = async (req, res) => {
 };
 
 /**
+   * Add an event
+   * @param {object} req
+   * @param {object} res
+   * @returns {object} created object record
+   */
+  const updateEventDetails = async (req, res) => {
+   const {
+      id, totalUsage
+   } = req.body;
+
+   //   const = moment(new Date());
+   if(empty(zone_id) || empty(start_time) || empty(stop_time)) {
+      errorMessage.error = 'id and totalUsage are required values.';
+      return res.status(status.bad).send(errorMessage);
+   }
+   const createEventQuery = `UPDATE
+          event SET total_usage = $1 WHERE id = $2
+          returning *`;
+   const values = [
+      totalUsage,
+      id
+   ];
+
+   try {
+      const { rows } = await dbQuery.query(createEventQuery, values);
+      const dbResponse = rows[0];
+      successMessage.data = dbResponse;
+      return res.status(status.created).send(successMessage);
+   } catch(error) {
+      errorMessage.error = `Event for ${id} was not updated.`;
+      return res.status(status.error).send(errorMessage);
+   }
+};
+
+
+/**
    * Get Event Range. Returns array of events overlapping the supplied times 
    * Some tips: It may be best to grab by zone by day. Day is interpretted here
    * as a cycle
@@ -89,7 +125,8 @@ const getEventRange = async (req, res) => {
 };
 
 
-export {
+export {   
    getEventRange,
    addEventDetails,
+   updateEventDetails,
 };

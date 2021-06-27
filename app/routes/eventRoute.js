@@ -2,7 +2,7 @@
 
 import express from 'express';
 
-import { getEventRange, addEventDetails, updateEventDetails } from '../controllers/eventController.js';
+import { getEventRange, retrieveEvents, addEventDetails, updateEventDetails } from '../controllers/eventController.js';
 import verifyAuth from '../middlewares/verifyAuth.js';
    
 const router = express.Router();
@@ -11,7 +11,8 @@ const router = express.Router();
 // POST creates. Not idempotent
 router.post('/events', verifyAuth, addEventDetails);
 // GET retrieves. Idempotent
-router.get('/events', verifyAuth, getEventRange);
+// router.get('/events', verifyAuth, retrieveEvents);
+router.get('/events', retrieveEvents);
 // PUT updates the entire resource. Idempotent
 router.put('/events', verifyAuth, updateEventDetails);
 // PATCH could update just certain events, but not currently part of API

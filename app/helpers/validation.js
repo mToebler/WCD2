@@ -1,11 +1,11 @@
 //app/helpers/validation.js
 
-// import env from '../../env.js';
+import env from '../../env.js';
 // NOTE: hailmary! ENV ISSUE
-import env from 'dotenv';
+// import env from 'dotenv';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-
+// env.config();
 /**
    * isValidEmail helper method
    * @param {string} email
@@ -80,7 +80,9 @@ const generateUserToken = (email, id, is_admin, first_name, last_name) => {
  * @returns hashed pw
  */
 const hashPassword = (pw) => {
-   return bcrypt.hashSync(pw, env.secret);
+   console.log('hashPassword: env.secret is ', env.secret);
+   // return bcrypt.hashSync(pw, env.secret);
+   return bcrypt.hashSync(pw, bcrypt.genSaltSync(12));
 }
 
 /**

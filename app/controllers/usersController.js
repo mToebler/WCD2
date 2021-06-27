@@ -1,7 +1,9 @@
 //app/controller/usersController.js
 
 import moment from 'moment';
-
+import env from '../../env.js';
+import dotenv from 'dotenv';
+dotenv.config();  
 import dbQuery from '../db/dev/dbQuery.js';
 
 import {
@@ -17,6 +19,7 @@ import {
    errorMessage, successMessage, status,
 } from '../helpers/status.js';
 
+const DEBUG = process.env.DEBUG;
 /**
    * Create A User
    * @param {object} req
@@ -24,10 +27,22 @@ import {
    * @returns {object} reflection object
    */
 const createUser = async (req, res) => {
-   const {
+   // change to const
+   var {
       email, first_name, last_name, pw,
    } = req.body;
+   
+   
+   if(DEBUG) {
+      email = 'test@test.com';
+      first_name = 'test';
+      last_name = 'user';
+      pw = 'testytest';
+   }
+   console.log('usersController: DEBUG: ', DEBUG);
    console.log('usersController: email: ', email);
+   
+   
    // const created_on = moment(new Date());
    if(isEmpty(email) || isEmpty(first_name) || isEmpty(last_name) || isEmpty(pw)) {
       errorMessage.error = 'Email, password, first name and last name field cannot be empty';
@@ -42,6 +57,7 @@ const createUser = async (req, res) => {
       return res.status(status.bad).send(errorMessage);
    }
    const hashedPassword = hashPassword(pw);
+   if(DEBUG) {console.log('UsersController: hashedPassword: ', hashedPassword);}
    const createUserQuery = `INSERT INTO
       users(email, first_name, last_name, pw)
       VALUES($1, $2, $3, $4)
@@ -52,7 +68,7 @@ const createUser = async (req, res) => {
       last_name,
       hashedPassword
    ];
-
+   if(DEBUG) {console.log('UsersController: trying db insert with: ', createUserQuery, values);}
    try {
       const { rows } = await dbQuery.query(createUserQuery, values);
       const dbResponse = rows[0];
@@ -67,6 +83,7 @@ const createUser = async (req, res) => {
          return res.status(status.conflict).send(errorMessage);
       }
       errorMessage.error = 'Operation was not successful';
+      console.log('UserController: ERROR: ', errorMessage, '\nERROR: ', error);
       return res.status(status.error).send(errorMessage);
    }
 };

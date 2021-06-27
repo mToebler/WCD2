@@ -1,6 +1,8 @@
 //app/helpers/validation.js
 
-import env from '../../env';
+// import env from '../../env.js';
+// NOTE: hailmary! ENV ISSUE
+import env from 'dotenv';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 

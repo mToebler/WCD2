@@ -1,6 +1,6 @@
 //db/dev/dbQuery.js
 
-import pool from './pool';
+import pool from './pool.js';
 
 export default {
    

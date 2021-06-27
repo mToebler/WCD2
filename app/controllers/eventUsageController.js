@@ -47,7 +47,10 @@ const storeUsageByEvent = async (req, res) => {
 //       errorMessage.error = 'Operation was not successful';
 //       return res.status(status.error).send(errorMessage);
 //    }
+   return null;
 };
 
 
 ///// TODO: NEED TO RESOLVE HOW TOTAL USAGE GETS STORED!!!! SEEMS TO BE CIRCUITOUS RIGHT NOW.
+
+export { storeUsageByEvent };

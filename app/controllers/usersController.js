@@ -2,7 +2,7 @@
 
 import moment from 'moment';
 
-import dbQuery from '../db/dev/dbQuery';
+import dbQuery from '../db/dev/dbQuery.js';
 
 import {
    hashPassword,
@@ -11,11 +11,11 @@ import {
    validatePassword,
    isEmpty,
    generateUserToken,
-} from '../helpers/validation';
+} from '../helpers/validation.js';
 
 import {
    errorMessage, successMessage, status,
-} from '../helpers/status';
+} from '../helpers/status.js';
 
 /**
    * Create A User
@@ -27,7 +27,7 @@ const createUser = async (req, res) => {
    const {
       email, first_name, last_name, pw,
    } = req.body;
-
+   console.log('usersController: email: ', email);
    // const created_on = moment(new Date());
    if(isEmpty(email) || isEmpty(first_name) || isEmpty(last_name) || isEmpty(pw)) {
       errorMessage.error = 'Email, password, first name and last name field cannot be empty';

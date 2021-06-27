@@ -1,17 +1,17 @@
 import moment from 'moment';
 
-import dbQuery from '../db/dev/dbQuery';
+import dbQuery from '../db/dev/dbQuery.js';
 
-import GALLONS from '../helpers/constants';
+import * as GALLONS from '../helpers/constants.js';
 
 import {
    isEmpty, empty,
-} from '../helpers/validations';
+} from '../helpers/validation.js';
 
 
 import {
    errorMessage, successMessage, status, trip_statuses,
-} from '../helpers/status';
+} from '../helpers/status.js';
 
 /**
    * Create usage usageTime is a timestamp or datetime in format 'yyyy-mm-dd hh:mm:ss'

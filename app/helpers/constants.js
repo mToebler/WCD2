@@ -2,4 +2,4 @@
 
 const GALLONS = 1;
 
-export { GALLONS };
+export { GALLONS, };

@@ -1,6 +1,7 @@
 {
   "name": "wcd2",
   "version": "1.0.0",
+  "type": "module",
   "description": "Water Conservation Dashboard",
   "main": "index.js",
   "scripts": {

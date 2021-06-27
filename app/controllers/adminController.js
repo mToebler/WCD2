@@ -1,18 +1,18 @@
 //app/controller/adminController.js
 
 import moment from 'moment';
-import dbQuery from '../db/dev/dbQuery';
+import dbQuery from '../db/dev/dbQuery.js';
 import {
    hashPassword,
    isValidEmail,
    validatePassword,
    isEmpty,
    generateUserToken,
-} from '../helpers/validation';
+} from '../helpers/validation.js';
 
 import {
    errorMessage, successMessage, status,
-} from '../helpers/status';
+} from '../helpers/status.js';
 
 /**
   * Creates an admin 

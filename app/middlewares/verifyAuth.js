@@ -4,9 +4,10 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import {
    errorMessage, status,
-} from '../helpers/status';
-
-import env from '../../env';
+} from '../helpers/status.js';
+/// NOTE: ENV ISSUE
+// import env from '../../env.js';
+// import env from 'dotenv';
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ const verifyToken = async (req, res, next) => {
    // get the token from the request header
    const { token } = req.headers;
    if(!token) {
+      console.log("verifyAuth: no token!!");
       errorMessage.error = 'Token not provided';
       return res.status(status.bad).send(errorMessage);
    }

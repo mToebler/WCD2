@@ -1,6 +1,8 @@
 //db/dev/pool.js
 
-import { Pool } from 'pg';
+import pkg from 'pg';
+const { Pool } = pkg;
+// import { Pool } from 'pg';
 
 import dotenv from 'dotenv';
 

@@ -29,8 +29,10 @@ const verifyToken = async (req, res, next) => {
    }
    try {
       // send token to be verified
-      const decoded = jwt.verify(token, process.env.SECRET);
-      // NOTE: TODO: Need to verify from the DB!!
+      console.log('verifyToken: secret: ', process.env.SECRET);
+      console.log('verifyToken: token: ', JSON.parse(token));
+      const decoded = jwt.verify(JSON.parse(token), process.env.SECRET);
+      // NOTE: TODO: Need to verify from the DB!! No real verification going on here!
       req.user = {
          email: decoded.email,
          user_id: decoded.user_id,         
@@ -42,6 +44,7 @@ const verifyToken = async (req, res, next) => {
       next();
    } catch(error) {
       errorMessage.error = 'Authentication Failed';
+      console.log('AdminController: ERROR: ', errorMessage, '\nERROR: ', error);
       return res.status(status.unauthorized).send(errorMessage);
    }
 };

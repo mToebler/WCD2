@@ -19,7 +19,8 @@ import {
    errorMessage, successMessage, status,
 } from '../helpers/status.js';
 
-const DEBUG = process.env.DEBUG;
+// const DEBUG = !!process.env.DEBUG ;
+const DEBUG = false;
 /**
    * Create A User
    * @param {object} req
@@ -53,7 +54,7 @@ const createUser = async (req, res) => {
       return res.status(status.bad).send(errorMessage);
    }
    if(!validatePassword(pw)) {
-      errorMessage.error = 'Password must be more than five(5) characters';
+      errorMessage.error = 'Password must be _more_ than eight (8) characters';
       return res.status(status.bad).send(errorMessage);
    }
    const hashedPassword = hashPassword(pw);

@@ -143,7 +143,7 @@ const getEventRange = async (req, res) => {
    * @returns {object} event array
    */
 /// TODO: this needs to be converted to fetch rachio
-const retrieveEvents = async (req, res) => {
+const retrieveAPIEvents = async (req, res) => {
    // console.log('retrieveEvents: req : ', req);
    const {
       start_time, stop_time
@@ -207,8 +207,8 @@ function getRachioDevices() {
 }
 
 function getRachioDevice(id) {
-   if(DEBUG) console.log('getRachioDevice: client: ', secrets.device_ID);
-   this.rachioClient.getDevice(secrets.device_ID)
+   if(DEBUG) console.log('getRachioDevice: client: ', env.rachio_device);
+   this.rachioClient.getDevice(env.rachio_device)
       .then(device => {
          console.log(`Name: ${device.name}; Model: ${device.model}; ID: ${device.id}`);
          return device;
@@ -220,8 +220,8 @@ function getRachioDevice(id) {
 }
 
 function getRachioConditions(id) {
-   if(DEBUG) console.log('getRachioDeviceConditions: client: ', secrets.device_ID);
-   this.rachioClient.getDeviceCurrentConditions(secrets.device_ID)
+   if(DEBUG) console.log('getRachioDeviceConditions: client: ', env.rachio_device);
+   this.rachioClient.getDeviceCurrentConditions(env.rachio_device)
       .then(conditions => {
          console.log(`conditions: `, conditions);
          return conditions;
@@ -234,8 +234,8 @@ function getRachioConditions(id) {
       returns an array of of Forecast objects for the next 14 days
 */
 function getRachioForecast(id) {
-   if(DEBUG) console.log('getRachioForecast: client: ', secrets.device_ID);
-   this.rachioClient.getDeviceForecast(secrets.device_ID)
+   if(DEBUG) console.log('getRachioForecast: client: ', env.rachio_device);
+   this.rachioClient.getDeviceForecast(env.rachio_device)
       .then(forecast => {
          console.log(`forecast: `, forecast);
          return forecast;
@@ -244,7 +244,7 @@ function getRachioForecast(id) {
 }
 
 function getRachioForecastDay(day) {
-   this.rachioClient.getDeviceForecast(secrets.device_ID)
+   this.rachioClient.getDeviceForecast(env.rachio_device)
       .then(forecast => {
          console.log(`forecast day: ${day}: `, forecast[day])
          return forecast[day];
@@ -253,7 +253,7 @@ function getRachioForecastDay(day) {
 }
 
 function getRachioZones(id) {
-   this.rachioClient.getZonesByDevice(secrets.device_ID)
+   this.rachioClient.getZonesByDevice(env.rachio_device)
       .then(zones => {
          console.log(`Zones: `, zones)
          return zones;
@@ -271,7 +271,7 @@ function getRachioZone(zoneId) {
 }
 
 function getRachioByNumber(number) {
-   this.rachioClient.getDevice(secrets.device_ID)
+   this.rachioClient.getDevice(env.rachio_device)
       .then(device => device.getZones())
       .then(zones => {
          zones.forEach(zone => {
@@ -294,7 +294,7 @@ function getRachioByNumber(number) {
 }
 
 function isRachioWatering(id) {
-   return this.rachioClient.isWatering(secrets.device_ID);
+   return this.rachioClient.isWatering(env.rachio_device);
 }
 
 // only one month of retrieval is allowed
@@ -326,12 +326,12 @@ async function getRachioEvents(startTime, endTime, filters = {}) {
       // begin crap
       if(DEBUG) console.log('getRachioEvents: env.rachio_device:', env.rachio_device, startTimeMS, endTimeMS, filters);
       // return await client.getDevices();
-         // .then(devices =>
-         //    devices.forEach(d =>
-         //       console.log(`${d.name} : ${d.model} : ${d.id}`)));
+      // .then(devices =>
+      //    devices.forEach(d =>
+      //       console.log(`${d.name} : ${d.model} : ${d.id}`)));
       // end crap
       // if(DEBUG) console.log(client.getDeviceEvents(env.rachio_device, startTimeMS, endTimeMS, filters).then(data => console.log(data)));
-      // this.rachioClient.getDeviceEvents(secrets.device_ID, startTime, endTime, filters)
+      // this.rachioClient.getDeviceEvents(env.rachio_device, startTime, endTime, filters)
       return await client.getDeviceEvents(env.rachio_device, startTimeMS, endTimeMS, filters);
       // .then(events => events.forEach(e => console.log(e.toPlainObject())));
       // .then(response => console.log(response));
@@ -342,10 +342,100 @@ async function getRachioEvents(startTime, endTime, filters = {}) {
    }
 }
 
+const prepEvents = (req, res, processCallback) => {
+   try {
+      getRachioEvents(null, null)
+         .then(data => processCallback(data));
+   } catch(error) {
+      errorMessage.error = 'An error Occured';
+      console.error("prepEvents: error: ", error);
+      return res.status(status.error).send(errorMessage);
+   }
+
+};
+
+async function summarizeEvents(data) {
+   let count = 0;
+   try {
+      data.forEach(r => {
+         let eventTime = r.eventDate;
+         let eventSum = r.summary.split(' ');
+         let zone = eventSum[0].slice(1); //; zone = zone
+         let duration = eventSum[eventSum.length - 2];
+         console.log(count++, r.summary, zone, duration, eventTime);
+
+         commitRachioEvent(zone, eventTime, duration)
+            .then(committed => console.log('sumarizeRachio: committed: ', committed));
+         
+
+      });
+   } catch(error) {
+      errorMessage.error = 'An error Occured';
+      console.error("summarizeRachio: inside error: ", error);
+      return res.status(status.error).send(errorMessage);
+   }
+}
+
+async function summarizeRachio(req, res) {
+   try {
+      let res = await getRachioEvents(null, null);
+      // console.log(res);
+      let count = 0;
+      res.forEach(r => {
+         let eventTime = r.eventDate/1000;
+         let eventSum = r.summary.split(' ');
+         let zone = eventSum[0].slice(1); //; zone = zone
+         let duration = eventSum[eventSum.length - 2];
+         console.log(count++, r.summary, zone, duration, eventTime);
+         try {
+            let committed = commitRachioEvent(zone, eventTime, duration);
+            console.log('sumarizeRachio: committed: ', committed);
+         } catch(error) {
+            errorMessage.error = 'An error Occured';
+            console.error("summarizeRachio: inside error: ", error);
+            return res.status(status.error).send(errorMessage);
+         }
+
+      });
+      // return res;
+   } catch(error) {
+      console.error("summarizeRachio: error: ", error);
+      errorMessage.error = 'An error Occured';
+      return res.status(status.error).send(errorMessage);
+   }
+}
+
+async function commitRachioEvent(zone_id, start_time, duration) {
+   const MINUTE = 60000; // milliseconds
+   let stop_time = start_time + (duration * MINUTE);
+   const createEventQuery = `INSERT INTO
+            event(zone_id, start_time, stop_time)
+            VALUES($1, to_timestamp($2), to_timestamp($3))
+         returning *`;
+   const values = [
+      zone_id,
+      start_time,
+      stop_time
+   ];
+
+   try {
+      const { rows } = await dbQuery.query(createEventQuery, values);
+      const dbResponse = rows[0];
+      successMessage.data = dbResponse;
+      return successMessage;
+      // return res.status(status.created).send(successMessage);
+   } catch(error) {
+      errorMessage.error = `Event for ${zone_id} was not added.`;
+      throw (new Error(errorMessage.error));
+      // return res.status(status.error).send(errorMessage);
+   }
+
+}
 
 export {
    getEventRange,
    addEventDetails,
    updateEventDetails,
-   retrieveEvents,
+   retrieveAPIEvents,
+   summarizeRachio,
 };

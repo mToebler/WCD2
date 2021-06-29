@@ -3,7 +3,7 @@ CREATE SEQUENCE event_id_seq;
 CREATE TABLE IF NOT EXISTS event (
 id INTEGER PRIMARY KEY NOT NULL DEFAULT nextval('event_id_seq'),
 zone_id INTEGER NOT NULL, -- [FK references: zone.id]
-start_time TIMESTAMP NOT NULL,
+start_time TIMESTAMP NOT NULL UNIQUE, -- unique so usage data doesn't keep getting added to the database
 stop_time TIMESTAMP NOT NULL CHECK (stop_time > start_time),
 total_usage NUMERIC(6,2) CHECK (total_usage > 0) -- this may be a virtual field in a view
 );

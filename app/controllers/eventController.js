@@ -371,11 +371,11 @@ async function summarizeEvents(data) {
       });
    } catch(error) {
       errorMessage.error = 'An error Occured';
-      console.error("summarizeRachio: inside error: ", error);
+      console.error("summarizeEvents: inside error: ", error);
       return res.status(status.error).send(errorMessage);
    }
 }
-
+/// this is working out quite well. massage this to populate the events table.
 async function summarizeRachio(req, res) {
    try {
       let res = await getRachioEvents(null, null);
@@ -425,8 +425,9 @@ async function commitRachioEvent(zone_id, start_time, duration) {
       return successMessage;
       // return res.status(status.created).send(successMessage);
    } catch(error) {
-      errorMessage.error = `Event for ${zone_id} was not added.`;
-      throw (new Error(errorMessage.error));
+      errorMessage.error = `CommitRachioEvent: WARNING: Event for ${zone_id} was not added.`;
+      return errorMessage;
+      // throw (new Error(errorMessage.error));
       // return res.status(status.error).send(errorMessage);
    }
 

@@ -22,8 +22,11 @@ CREATE TABLE IF NOT EXISTS usage (
 id INTEGER PRIMARY KEY NOT NULL DEFAULT nextval('usage_id_seq'),
 usage_time TIMESTAMP NOT NULL,
 usage_amount NUMERIC(12,10) CHECK (usage_amount >= 0),
-unit_id INTEGER  -- [FK to units.id]
+unit_id INTEGER  DEFAULT -- [FK to units.id]
 );
+
+CREATE UNIQUE INDEX idx_usage_time
+ON usage (usage_time);
 
 CREATE SEQUENCE sprinkler_id_seq;
 CREATE TABLE IF NOT EXISTS sprinkler (
@@ -63,6 +66,7 @@ ALTER TABLE usage
    ADD CONSTRAINT fk_usage_unit_id
    FOREIGN KEY (unit_id) REFERENCES unit(id);
 
+ALTER TABLE usage ALTER COLUMN unit_id SET DEFAULT 1;
 
 COMMIT;
 

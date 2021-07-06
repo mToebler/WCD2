@@ -15,4 +15,6 @@ export default {
    flume_secret: process.env.FLUME_CLIENT_SECRET,
    flume_user: process.env.FLUME_USERNAME,
    flume_pw: process.env.FLUME_PASSWORD,
+   flume_device: process.env.FLUME_DEVICE_ID,
+   flume_userId: process.env.FLUME_USER_ID,
 }

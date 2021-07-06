@@ -14,7 +14,7 @@ import {
 
 
 import {
-   errorMessage, successMessage, status, trip_statuses,
+   errorMessage, successMessage, status
 } from '../helpers/status';
 
 

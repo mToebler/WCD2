@@ -142,7 +142,6 @@ const getEventRange = async (req, res) => {
    * @param {object} res 
    * @returns {object} event array
    */
-/// TODO: this needs to be converted to fetch rachio
 const retrieveAPIEvents = async (req, res) => {
    // console.log('retrieveEvents: req : ', req);
    const {
@@ -377,37 +376,54 @@ async function summarizeEvents(data) {
 }
 /// this is working out quite well. massage this to populate the events table.
 async function summarizeRachio(req, res) {
+   let count = 0;
+   let resArr = [];
    try {
-      let res = await getRachioEvents(null, null);
-      // console.log(res);
-      let count = 0;
-      res.forEach(r => {
-         let eventTime = r.eventDate/1000;
-         let eventSum = r.summary.split(' ');
-         let zone = eventSum[0].slice(1); //; zone = zone
-         let duration = eventSum[eventSum.length - 2];
-         console.log(count++, r.summary, zone, duration, eventTime);
+      let sRes = await getRachioEvents(null, null);
+      // console.log(sRes);      
+      await sRes.forEach(r => {
+         const eventTime = r.eventDate / 1000;
+         const eventSum = r.summary.split(' ');
+         const zone = eventSum[0].slice(1); //; zone = zone
+         const duration = eventSum[eventSum.length - 2];
+         const stop_time = eventTime + (duration * 60);
+         // console.log('\n\n', count++, r, '\n', r.summary, zone, duration, eventTime, stop_time);
+         // console.log(count, )
          try {
-            let committed = commitRachioEvent(zone, eventTime, duration);
-            console.log('sumarizeRachio: committed: ', committed);
+            // let committed = commitRachioEvent(zone, eventTime, duration);
+            commitRachioEventByTime(zone, eventTime, stop_time)
+               .then(committed => {
+                  console.log('sumarizeRachio: committed: ', committed);
+                  count++;
+                  return committed;
+               })
+               .then(committed => resArr[count] = committed);
+            
+            // console.log('sumarizeRachio: committed: ', committed);
          } catch(error) {
             errorMessage.error = 'An error Occured';
             console.error("summarizeRachio: inside error: ", error);
             return res.status(status.error).send(errorMessage);
          }
 
-      });
+      })
+        
       // return res;
    } catch(error) {
       console.error("summarizeRachio: error: ", error);
       errorMessage.error = 'An error Occured';
       return res.status(status.error).send(errorMessage);
+   } finally {
+      successMessage.data = `${count} records committed.`;
+      return res.status(status.created).send(successMessage);
    }
 }
 
 async function commitRachioEvent(zone_id, start_time, duration) {
-   const MINUTE = 60000; // milliseconds
+   const MINUTE = 60; // these results are processed as seconds
    let stop_time = start_time + (duration * MINUTE);
+   console.log(`\n\ncommitRachioEvent: values: zone_id: ${zone_id}, start_time: ${start_time}, stop_time: ${stop_time} `);
+   
    const createEventQuery = `INSERT INTO
             event(zone_id, start_time, stop_time)
             VALUES($1, to_timestamp($2), to_timestamp($3))
@@ -432,6 +448,35 @@ async function commitRachioEvent(zone_id, start_time, duration) {
    }
 
 }
+
+async function commitRachioEventByTime(zone_id, start_time, stop_time) {
+   console.log(`\n\ncommitRachioEventByTime: values: zone_id: ${zone_id}, start_time: ${start_time}, stop_time: ${stop_time} `);
+   
+   const createEventQuery = `INSERT INTO
+            event(zone_id, start_time, stop_time)
+            VALUES(${zone_id}, to_timestamp(${start_time}), to_timestamp(${stop_time}))
+         returning *`;
+   const values = [
+      // zone_id,
+      // start_time,
+      // stop_time
+   ];
+
+   try {
+      const { rows } = await dbQuery.query(createEventQuery, values);
+      const dbResponse = rows[0];
+      successMessage.data = dbResponse;
+      return successMessage;
+      // return res.status(status.created).send(successMessage);
+   } catch(error) {
+      errorMessage.error = `CommitRachioEvent: WARNING: Event for ${zone_id} was not added.`;
+      return errorMessage;
+      // throw (new Error(errorMessage.error));
+      // return res.status(status.error).send(errorMessage);
+   }
+
+}
+
 
 export {
    getEventRange,
